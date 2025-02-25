@@ -1,0 +1,98 @@
+---
+title: "Grazing_Lab"
+output: html_document
+date: "2025-02-25"
+---
+
+```{r import csv, include=FALSE}
+lab_data <- read.csv("lab_data.csv")
+lab_data <- na.omit(lab_data)
+lab_df <- as.data.frame(lab_data)
+treatment <- as.factor(lab_df$Treatment)
+trial <- as.factor(lab_df$Trial)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r bar chart ingestion, include=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(tidyr)
+
+# Assuming your data is in 'lab_data' with columns: Treatment, Trial, Ingestion_Diat, Ingestion_Chloro
+# Reshape data to long format, keeping 'Trial' as a variable
+lab_data_long <- lab_data %>%
+  pivot_longer(cols = c(Ingestion_Diat, Ingestion_Chloro), 
+               names_to = "Measurement", 
+               values_to = "Value")
+
+# Ensure 'Trial' is a factor (if not already)
+lab_data_long$Trial <- as.factor(lab_data_long$Trial)
+
+# Create the bar chart with facet_wrap to separate trials
+ingestion_plot <- ggplot(lab_data_long, aes(x = Treatment, y = Value, fill = interaction(Measurement, Trial))) +
+  geom_bar(stat = "identity", position = "dodge") +  # 'dodge' to place bars side by side
+  theme_minimal() +
+  labs(
+    x = "Treatment (mL)",
+    y = expression("Ingestion Rate (cells" ~ mL^{-1} * ~ hr^{-1} * ")"),
+    title = NULL,
+    fill = "Phytoplankton Type & Trial"  # Custom legend title
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Ingestion_Diat.1" = "lightgreen", "Ingestion_Chloro.1" = "lightblue", 
+      "Ingestion_Diat.2" = "#00A36C", "Ingestion_Chloro.2" = "#4169E1"
+    ),
+    labels = c(
+      "Ingestion_Diat.1" = "Diatom (Trial 1)", "Ingestion_Chloro.1" = "Chlorophyte (Trial 1)",
+      "Ingestion_Diat.2" = "Diatom (Trial 2)", "Ingestion_Chloro.2" = "Chlorophyte (Trial 2)"
+    )
+  ) +
+  facet_wrap(~ Trial)  # Facets for each trial
+
+# Print the plot
+print(ingestion_plot)
+
+```
+
+```{r bar chart clearance, include=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(tidyr)
+
+# Assuming your data is in 'lab_data' with columns: Treatment, Trial, Ingestion_Diat, Ingestion_Chloro
+# Reshape data to long format, keeping 'Trial' as a variable
+lab_data_long <- lab_data %>%
+  pivot_longer(cols = c(Clearance_Diat, Clearance_Chloro), 
+               names_to = "Measurement", 
+               values_to = "Value")
+
+# Ensure 'Trial' is a factor (if not already)
+lab_data_long$Trial <- as.factor(lab_data_long$Trial)
+
+# Create the bar chart with facet_wrap to separate trials
+clearance_plot <- ggplot(lab_data_long, aes(x = Treatment, y = Value, fill = interaction(Measurement, Trial))) +
+  geom_bar(stat = "identity", position = "dodge") +  # 'dodge' to place bars side by side
+  theme_minimal() +
+  labs(
+    x = "Treatment (mL)",
+    y = expression("Clearance Rate (mL" ~ copepod^{-1} * ~ hr^{-1} * ")"),
+    title = NULL,
+    fill = "Phytoplankton Type & Trial"  # Custom legend title
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Clearance_Diat.1" = "lightgreen", "Clearance_Chloro.1" = "lightblue", 
+      "Clearance_Diat.2" = "#00A36C", "Clearance_Chloro.2" = "#4169E1"
+    ),
+    labels = c(
+      "Clearance_Diat.1" = "Diatom (Trial 1)", "Clearance_Chloro.1" = "Chlorophyte (Trial 1)",
+      "Clearance_Diat.2" = "Diatom (Trial 2)", "Clearance_Chloro.2" = "Chlorophyte (Trial 2)"
+    )
+  ) +
+  facet_wrap(~ Trial)  # Facets for each trial
+
+# Print the plot
+print(clearance_plot)
+```
